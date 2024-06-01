@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "make-jewelry-28704",
+  "private_key_id": "8e984dd4701275595f813f096c62a80e230f6ded",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfa9NdRLMo3ihr\n1Vim/V8Wy0VziiQ+9oxyed1oRTm7Ch2zOSuESNITyfVT8DNJxqKqxvuVAZlW4sMH\nLVmGH97CVxXkcbtbm6BzmBvtqDXuuFsizoPNQ5MJOHblqwY4A43mRo2hRQLaUBnp\nPzUTHzKaU/TuQocrOTG3B4AD6U38/QjeeNAFzeNbB+quBTvsTZDn5h/2VK0zRrxK\nf8zCIb+CtndR+AHYM5JSHUbawACmTVOL3e1avJSyX2I1BNmcp//9UqH4gsUXieSC\nE7hIfOVnI08KvBK72gHB3CvsfR2g+26I3t3ZG99N/B4x8Oc6pvw0mnitsgywQRdR\nQDXGg/efAgMBAAECggEANHwMgZ8HZWTW4woR0ty3j0++J3e+rwnVEXleUUXd23nz\nYyxddCx1KU/qsUa+jai7gtnOtQDUqEwJ27BEFRV8i3PQwUMUa99B0JXdjbVTwhoN\n0r3nyXsD2gkpKSfFhLgVCBDv6YAgPO/PPnNqQO01wnpRkf0P6s/7RU9eO8z9VJ4e\nJBCdQx/2w7GnkqDyrsQ2/z2vn1uq5zd4nX/5TTL6rxIzCBfSFD8uDaurhuAQjK52\nBnpVp4wjXuht01ebwUZ1Ka71vxzp2SIdwM40eShUb0fbzAj2Zk7K1Av5q/aPMk9Y\nzJJkTh1Ll6CLPMTHm28oc42rCGaEMGAovo/IUQvk7QKBgQD2CkXKLOLcrJHC0NnP\nakVQ/zxueSz6oH+WpnB1k0sJPwzaiIe73J/ctps2ad8ldKZMl4mkrJZZVvv1zmRr\ncSpdZAcWtNOJUEGDbuKFfNg+AHCvrXBGmKK+S5ME0PEPgGsyjSYnRQbrCGpnuqHi\niFDCQ2oX7dM/K+4d4mCqf5llgwKBgQDodybalcLcyLXnaH9MwLSr99mG1jPoGgA1\nqaMglu9j5T/WqjaULydJzyBvwvQr0fcQUS8Cb6416zWVdbWnmPFNXDFOSZW5+CdZ\nXnxLkucQx+BoNdl++mHN+lm4G1oeMTdDW/iNEOImyAPzdAY41LYXC1W7WOhQCsHy\n/optF19mtQKBgQDdGNwgU3fGUHln9SBWSKxjngmjSNdHnaUqLwVOUv+SHouhciFv\ni1JJF/ugyUESuqGaoG67gbBWNlmTSVZqSraEWBgaqoKRmYJV5vY+eLMl/GVHKXeE\nqTNOCEHkiRKnGIK8WaUYkuolmVltP4SsOk1AVS5otHoqAYMobb7qWGHzmwKBgCwc\nkA7iZDupCnuC5MUXvDD1sx1XADqG1ItaSU4h1gNKuTZuzjSIThg/aZRLljHKgeti\nvFzl/FTW8TAPSg0nhIJ9gA2vAO5tHGpk94kPszEH/JlJvp/Nu0luvB+ncQ5RoH7z\nsNJz5bYeNkG4PoYCNxtgV0BZupuVrwABNRtGWCARAoGAOLniVkTVCs7bpdVcYpiz\nkBTPsuEKWbiYZmWgf2PCuudikR0GaAawfiMA6SetbLhDFBTaiolSymOztKlWj/m5\nZxOIrsm9DQQRHzDy5QvO78pMoIWN9MDd5c3HwI1dwM6hBRGHAyYdUDSSb+Xr45QD\nhDD9jBPBkA5SsXHXHYKixFY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-u4do7@make-jewelry-28704.iam.gserviceaccount.com",
+  "client_id": "114277773711416759035",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-u4do7%40make-jewelry-28704.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
