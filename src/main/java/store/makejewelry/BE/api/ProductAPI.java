@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import store.makejewelry.BE.model.Admin.ProductTemplateRequest;
-import store.makejewelry.BE.model.Admin.ProductTemplateResponse;
-import store.makejewelry.BE.model.DisableMethodRequest;
+import store.makejewelry.BE.entity.Product;
+import store.makejewelry.BE.model.Admin.ProductRequest;
+import store.makejewelry.BE.model.Admin.ProductResponse;
 import store.makejewelry.BE.model.DisableMethodRespone;
+import store.makejewelry.BE.repository.ProductRepository;
 import store.makejewelry.BE.service.ProductService;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/product")
@@ -20,31 +22,39 @@ public class ProductAPI {
     @Autowired
     ProductService productService;
 
+    @Autowired
+    ProductRepository productRepository;
+
     @PostMapping()
-    public ResponseEntity addProduct(@RequestBody ProductTemplateRequest productTemplateRequest) {
+    public ResponseEntity addProduct(@RequestBody ProductRequest productRequest) {
         // nhan request tu FE
-        ProductTemplateResponse addProductResponse = productService.addProduct(productTemplateRequest);
+        ProductResponse addProductResponse = productService.addProduct(productRequest);
         return ResponseEntity.ok(addProductResponse);
     }
 
-    @PatchMapping("")
-    public ResponseEntity disableProduct(@RequestBody DisableMethodRequest disableMethodRequest) {
+    @PatchMapping("/{id}")
+    public ResponseEntity disableProduct(@PathVariable long id) {
         // nhan request tu FE
-        DisableMethodRespone disableProductTpl = productService.disableProductTpl(disableMethodRequest);
+        DisableMethodRespone disableProductTpl = productService.disableProduct(id);
         return ResponseEntity.ok(disableProductTpl);
     }
 
     @PutMapping("")
-    public ResponseEntity updateProduct(@RequestBody ProductTemplateRequest productTemplateRequest) {
+    public ResponseEntity updateProduct(@RequestBody ProductRequest productRequest, long id) {
         // nhan request tu FE
-        ProductTemplateResponse updateProductTemplateResponse = productService.addProduct(productTemplateRequest);
-        return ResponseEntity.ok(updateProductTemplateResponse);
+        ProductResponse updateProductResponse = productService.updateProduct(productRequest , id );
+        return ResponseEntity.ok(updateProductResponse);
     }
 
-    @DeleteMapping("")
-    public ResponseEntity deleteProduct(@RequestBody ProductTemplateRequest productTemplateRequest) {
-        // nhan request tu FE
-        ProductTemplateResponse deleteProductTemplateResponse = productService.updateProduct(productTemplateRequest);
-        return ResponseEntity.ok(deleteProductTemplateResponse);
+    @GetMapping("")
+    public ResponseEntity <List<Product>> getAllProduct() {
+        List<Product> list = productRepository.findAll();
+        return ResponseEntity.ok(list);
     }
+
+//    @GetMapping("/search")
+//    public ResponseEntity<List<Product>> searchProduct(@RequestParam("productName") String productName, @RequestParam("id") long id) {
+//            return (ResponseEntity<List<Product>>) productRepository.findProductByIdOrProductName(id , productName);
+//        }
+
 }

@@ -12,4 +12,5 @@ public class RegisterRequest {
     String email;
     String gender;
     Date birthday;
+    String address;
 }

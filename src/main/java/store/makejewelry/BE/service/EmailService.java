@@ -18,10 +18,12 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendMailTemplate(EmailDetail emailDetail, String fullname){
-        try{
+    public void sendMailTemplate(EmailDetail emailDetail) {
+        try {
             Context context = new Context();
-            context.setVariable("name", fullname);
+            context.setVariable("name", emailDetail.getFullName());
+            context.setVariable("button", emailDetail.getButton());
+            context.setVariable("link", emailDetail.getLink());
 
             String text = templateEngine.process("emailtemplate", context);
 
@@ -35,30 +37,9 @@ public class EmailService {
             mimeMessageHelper.setText(text, true);
             mimeMessageHelper.setSubject(emailDetail.getSubject());
             javaMailSender.send(mimeMessage);
-        }catch (MessagingException messagingException){
+        } catch (MessagingException messagingException) {
             messagingException.printStackTrace();
         }
     }
 
-    public void sendMailCode(EmailDetail emailDetail, String token){
-        try{
-            Context context = new Context();
-            context.setVariable("name", token);
-
-            String text = templateEngine.process("emailtemplate", context);
-
-            // Creating a simple mail message
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-
-            // Setting up necessary details
-            mimeMessageHelper.setFrom("admin@gmail.com");
-            mimeMessageHelper.setTo(emailDetail.getRecipient());
-            mimeMessageHelper.setText(text, true);
-            mimeMessageHelper.setSubject(emailDetail.getSubject());
-            javaMailSender.send(mimeMessage);
-        }catch (MessagingException messagingException){
-            messagingException.printStackTrace();
-        }
-    }
 }

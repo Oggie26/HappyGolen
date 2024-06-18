@@ -5,6 +5,5 @@ import lombok.Data;
 @Data
 public class DisableMethodRespone {
     long id;
-    String productName;
     Boolean status;
 }

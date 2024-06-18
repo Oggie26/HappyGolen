@@ -1,2 +1,7 @@
-package store.makejewelry.BE.model;public class OrderResponse {
+package store.makejewelry.BE.model;
+
+import lombok.Data;
+
+@Data
+public class OrderResponse {
 }

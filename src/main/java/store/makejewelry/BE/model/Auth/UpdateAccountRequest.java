@@ -5,12 +5,13 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class UpdateAccountResponse {
-    String fullname;
-    String email;
-    String gender;
+public class UpdateAccountRequest {
+    long id;
+    String fullName;
     Date birthday;
-    String password;
     String address;
-
+    String gender;
+    String email;
+    String password;
+    String phone ;
 }

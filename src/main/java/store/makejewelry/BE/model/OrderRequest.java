@@ -1,2 +1,13 @@
-package store.makejewelry.BE.model;public class OrderRequest {
+package store.makejewelry.BE.model;
+
+import lombok.Data;
+import store.makejewelry.BE.entity.Product;
+
+@Data
+public class OrderRequest {
+    String phone ;
+    String email;
+    long id;
+    Product product;
+
 }

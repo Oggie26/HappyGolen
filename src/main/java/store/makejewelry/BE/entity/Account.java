@@ -1,12 +1,14 @@
 package store.makejewelry.BE.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import store.makejewelry.BE.enums.RoleEnum;
 
 import java.util.Collection;
 import java.util.Date;
@@ -27,7 +29,7 @@ public class Account implements UserDetails {
     String password;
 
     @Column
-    String fullname ;
+    String fullName ;
 
     @Column(unique = true)
     String email;
@@ -40,6 +42,12 @@ public class Account implements UserDetails {
 
     @Column(nullable = false)
     Boolean status;
+
+    @Column
+    String address;
+
+    @Column
+    RoleEnum role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -70,4 +78,10 @@ public class Account implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+//    @OneToMany(mappedBy = "account")
+//    List<ProcessOrder> processOrder;
+
+    @OneToMany(mappedBy = "account")
+    List<Blog> blog;
 }

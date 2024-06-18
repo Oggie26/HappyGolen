@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,7 +33,7 @@ public class Product {
     @Column
     Date date ;
 
-    @Column
+    @Column(nullable = false)
     Boolean status;
 
     @Column
@@ -44,5 +45,14 @@ public class Product {
     @Column
     int quantity;
 
-    Boolean isDelete = false ;
+    @OneToMany(mappedBy = "product")
+    List<OrderDetail> orderDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "material_id")
+    Material material;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    Category category;
 }

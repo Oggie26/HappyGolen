@@ -10,6 +10,6 @@ public class RegisterResponse {
     String fullname;
     String email;
     String gender;
-    Date birthday;
-
+    String birthday;
+    String address;
 }

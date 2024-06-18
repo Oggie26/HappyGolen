@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @ToString
 @Setter
@@ -43,5 +44,15 @@ public class ProductTemplate {
     @Column
     String description;
 
-    boolean isDelete = false;
+    @OneToMany(mappedBy = "productTemplate")
+    List<OrderDetail> orderDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "material_id")
+    Material material;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    Category category;
+
 }
