@@ -1,9 +1,11 @@
 package store.makejewelry.BE.model.Admin;
 
 import lombok.Data;
+
 import java.util.Date;
+
 @Data
-public class ProductTemplateResponse {
+public class ProductResponse {
     int quantity;
     Float size;
     Boolean status;
@@ -14,7 +16,6 @@ public class ProductTemplateResponse {
     Float weight;
     String content;
     long id;
-    long materialId;
+    long materialID ;
     long categoryId ;
-
 }

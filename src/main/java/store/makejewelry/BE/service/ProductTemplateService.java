@@ -2,18 +2,30 @@
 
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.stereotype.Service;
-    import org.springframework.web.bind.annotation.RequestBody;
+    import store.makejewelry.BE.entity.Category;
+    import store.makejewelry.BE.entity.Material;
     import store.makejewelry.BE.entity.ProductTemplate;
-    import store.makejewelry.BE.model.DisableMethodRequest;
     import store.makejewelry.BE.model.Admin.ProductTemplateRequest;
     import store.makejewelry.BE.model.Admin.ProductTemplateResponse;
     import store.makejewelry.BE.model.DisableMethodRespone;
+    import store.makejewelry.BE.repository.CategoryRepository;
+    import store.makejewelry.BE.repository.MaterialRepository;
     import store.makejewelry.BE.repository.ProductTemplateRepository;
+
+    import java.util.ArrayList;
+    import java.util.List;
 
     @Service
     public class ProductTemplateService {
+
         @Autowired
-        private ProductTemplateRepository productTemplateRepository;
+        ProductTemplateRepository productTemplateRepository;
+
+        @Autowired
+        MaterialRepository materialRepository;
+
+        @Autowired
+        CategoryRepository categoryRepository;
 
         public ProductTemplateResponse addProductTpl(ProductTemplateRequest productTemplateRequest) {
             ProductTemplateResponse productTemplateResponse = new ProductTemplateResponse();
@@ -24,13 +36,17 @@
 
                 pt.setProductName(productTemplateRequest.getProductName());
                 pt.setImage(productTemplateRequest.getImage());
-                pt.setDate(productTemplateRequest.getDate());
+//                pt.setDate(productTemplateRequest.getDate());
                 pt.setPrice(productTemplateRequest.getPrice());
                 pt.setSize(productTemplateRequest.getSize());
                 pt.setQuantity(productTemplateRequest.getQuantity());
                 pt.setWeight(productTemplateRequest.getWeight());
                 pt.setStatus(productTemplateRequest.getStatus());
                 pt.setDescription(productTemplateRequest.getContent());
+                Material material = materialRepository.findMaterialById(productTemplateRequest.getMaterialId());
+                pt.setMaterial(material);
+                Category category = categoryRepository.findCategoryById(productTemplateRequest.getCategoryId());
+                pt.setCategory(category);
             //luu vao db
                 ProductTemplate newpt = productTemplateRepository.save(pt);
             //tra ve response
@@ -44,27 +60,30 @@
                 productTemplateResponse.setWeight(newpt.getWeight());
                 productTemplateResponse.setStatus(newpt.getStatus());
                 productTemplateResponse.setContent(newpt.getDescription());
+                productTemplateResponse.setCategoryId(newpt.getId());
+                productTemplateResponse.setMaterialId(newpt.getId());
             }
 
             return productTemplateResponse;
         }
 
-        public DisableMethodRespone disableProductTpl(@RequestBody DisableMethodRequest disableMethodRequest) {
+        public DisableMethodRespone disableProductTpl(long id) {
             DisableMethodRespone disableMethodRespone =  new DisableMethodRespone();
             //check co ton tai k
-            if (productTemplateRepository.findProductTemplateByProductName(disableMethodRequest.getProductName()) != null  ||
-                    productTemplateRepository.findProductTemplateById(disableMethodRequest.getId()) != null) {
+            if (productTemplateRepository.findProductTemplateById(id) != null) {
                 ProductTemplate pt = new ProductTemplate();
-                pt.setStatus(false);
-                //luu
+                if(pt.getStatus()){
+                    pt.setStatus(false);
+                }else{
+                    pt.setStatus(true);
+                }
                 productTemplateRepository.save(pt);
-                //tra ve response
                 disableMethodRespone.setStatus(pt.getStatus());
             }
             return disableMethodRespone;
         }
 
-        public ProductTemplateResponse updateProductTpl(ProductTemplateRequest productTemplateRequest) {
+        public ProductTemplateResponse updateProductTpl(ProductTemplateRequest productTemplateRequest, long id) {
             ProductTemplateResponse productTemplateResponse = new ProductTemplateResponse();
             ProductTemplate pt = new ProductTemplate();
             //Xu li co ton tai hay chua
@@ -72,13 +91,17 @@
 
                 pt.setProductName(productTemplateRequest.getProductName());
                 pt.setImage(productTemplateRequest.getImage());
-                pt.setDate(productTemplateRequest.getDate());
+//                pt.setDate(productTemplateRequest.getDate());
                 pt.setPrice(productTemplateRequest.getPrice());
                 pt.setSize(productTemplateRequest.getSize());
                 pt.setQuantity(productTemplateRequest.getQuantity());
                 pt.setWeight(productTemplateRequest.getWeight());
                 pt.setStatus(productTemplateRequest.getStatus());
                 pt.setDescription(productTemplateRequest.getContent());
+                Material material = materialRepository.findMaterialById(productTemplateRequest.getMaterialId());
+                pt.setMaterial(material);
+                Category category = categoryRepository.findCategoryById(productTemplateRequest.getCategoryId());
+                pt.setCategory(category);
                 //luu vao db
                 ProductTemplate newpt = productTemplateRepository.save(pt);
                 //tra ve response
@@ -92,19 +115,33 @@
                 productTemplateResponse.setWeight(newpt.getWeight());
                 productTemplateResponse.setStatus(newpt.getStatus());
                 productTemplateResponse.setContent(newpt.getDescription());
-            }
+                productTemplateResponse.setCategoryId(newpt.getId());
+                productTemplateResponse.setMaterialId(newpt.getId());            }
 
             return productTemplateResponse;
         }
 
-        public DisableMethodRespone disableAccount (@RequestBody DisableMethodRequest disableMethodRequest) {
-            DisableMethodRespone deleteProductTpl =  new DisableMethodRespone();
-            //check co ton tai k
-            if (productTemplateRepository.findProductTemplateByProductName(disableMethodRequest.getProductName()) != null ){
-                ProductTemplate pt = new ProductTemplate();
-                productTemplateRepository.findProductTemplateByIdAndIsDeleteFalse(pt.getId());
+        public ProductTemplate disableAccount(long id) {
+            ProductTemplate product = productTemplateRepository.findProductTemplateById(id);
+
+            if (product != null) {
+                product.setStatus(!product.getStatus());
+                ProductTemplate disabledProduct = productTemplateRepository.save(product);
+
+                return disabledProduct;
             }
-            return deleteProductTpl;
+
+            return null;
         }
 
+        public List<ProductTemplate> searchProductTemplate(String name, long id) {
+            List<ProductTemplate> resultList = new ArrayList<>();
+            List<ProductTemplate> list = productTemplateRepository.findAll();
+            for (ProductTemplate product : list) {
+                if (product.getProductName().equalsIgnoreCase(name) || product.getId() == id) {
+                    resultList.add(product);
+                }
+            }
+            return resultList;
+        }
     }

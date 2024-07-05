@@ -6,23 +6,25 @@ import com.google.firebase.auth.FirebaseToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import store.makejewelry.BE.entity.Account;
+import store.makejewelry.BE.enums.RoleEnum;
 import store.makejewelry.BE.exception.AuthException;
-import store.makejewelry.BE.model.Auth.AccountResponse;
-import store.makejewelry.BE.model.Auth.LoginRequest;
-import store.makejewelry.BE.model.Auth.RegisterRequest;
-import store.makejewelry.BE.model.DisableMethodRequest;
-import store.makejewelry.BE.model.Email.CodeRequest;
+import store.makejewelry.BE.model.Admin.AddAccountByAdminRequest;
+import store.makejewelry.BE.model.Admin.AddAccountByAdminResponse;
+import store.makejewelry.BE.model.Auth.*;
 import store.makejewelry.BE.model.Email.EmailDetail;
+import store.makejewelry.BE.model.ForgotPassRequest;
 import store.makejewelry.BE.model.LoginGoogleRequest;
 import store.makejewelry.BE.repository.AccountRepository;
-import java.net.URLEncoder;
-import java.util.ArrayList;
+
+import java.text.ParseException;
+import java.util.*;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -41,36 +43,48 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     TokenService tokenService;
 
-    public AccountResponse register(RegisterRequest registerRequest) {
+    public AccountResponse register(RegisterRequest registerRequest) throws ParseException {
+        Account newAccount = null;
         Account account = new Account();
         account.setPhone(registerRequest.getPhone());
         account.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         account.setEmail(registerRequest.getEmail());
-        account.setFullname(registerRequest.getFullname());
+        account.setFullName(registerRequest.getFullname());
         account.setGender(registerRequest.getGender());
         account.setBirthday(registerRequest.getBirthday());
+        account.setAddress(registerRequest.getAddress());
+        account.setRole(RoleEnum.CUSTOMER);
         account.setStatus(true);
-        Account newAccount = accountRepository.save(account);
-
+        newAccount = accountRepository.save(account);
 // Trả về đối tượng AccountResponse
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setPhone(newAccount.getPhone());
         accountResponse.setEmail(newAccount.getEmail());
         accountResponse.setBirthday(newAccount.getBirthday());
         accountResponse.setGender(newAccount.getGender());
-        accountResponse.setFullname(newAccount.getFullname());
+        accountResponse.setFullName(newAccount.getFullName());
         accountResponse.setStatus(newAccount.getStatus());
-// Khi thanh cong dang ki gui mail ve
-       try{
-           EmailDetail emailDetail = new EmailDetail();
-           emailDetail.setRecipient(account.getEmail());
-           emailDetail.setMsgBody("Welcome to join HappyGolden");
-           emailDetail.setSubject("HappyGolden");
-           emailDetail.setAttachment("");
-           emailService.sendMailTemplate(emailDetail, account.getFullname());
-       }catch (Exception e){
-           System.out.println("Error to send mail to " + newAccount.getEmail());
-       }
+        accountResponse.setAddress(newAccount.getAddress());
+        accountResponse.setRole(newAccount.getRole());
+        // Khi thanh cong dang ki gui mail ve
+        try {
+            EmailDetail emailDetail = new EmailDetail();
+            emailDetail.setRecipient(account.getEmail());
+            emailDetail.setMsgBody("Welcome to join HappyGolden");
+            emailDetail.setSubject("HappyGolden");
+            emailDetail.setButton("Login To System");
+            emailDetail.setLink("http://159.223.64.244/login");
+            emailDetail.setFullName(newAccount.getFullName());
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    emailService.sendMailTemplate(emailDetail);
+                }
+            };
+            new Thread(r).start();
+        } catch (Exception e) {
+            System.out.println("Error to send mail to " + newAccount.getEmail());
+        }
 
         return accountResponse;
     }
@@ -94,84 +108,65 @@ public class AuthenticationService implements UserDetailsService {
         return accountResponse;
     }
 
-    public AccountResponse code(CodeRequest codeRequest) {
+    public UpdateAccountResponse updateAccount(UpdateAccountRequest updateAccountRequest, long id) {
+        UpdateAccountResponse updateAccountResponse = null;
+        Account account = accountRepository.findAccountById(id);
+        account.setFullName(updateAccountRequest.getFullName());
+        account.setBirthday(updateAccountRequest.getBirthday());
+        account.setAddress(updateAccountRequest.getAddress());
+        account.setGender(updateAccountRequest.getGender());
+        account.setPhone(updateAccountRequest.getPhone());
+        account.setPassword(updateAccountRequest.getPassword());
+        Account newaccount = accountRepository.save(account);
+        updateAccountResponse = new UpdateAccountResponse();
+        updateAccountResponse.setFullName(newaccount.getFullName());
+        updateAccountResponse.setEmail(newaccount.getEmail());
+        updateAccountResponse.setPassword(newaccount.getPassword());
+        updateAccountResponse.setBirthday(newaccount.getBirthday());
+        updateAccountResponse.setAddress(newaccount.getAddress());
+        updateAccountResponse.setPhone(newaccount.getPhone());
+        return updateAccountResponse;
+    }
+
+    public List<Account> viewAccount() {
+        List<Account> accountList = accountRepository.findAll();
+        return accountList;
+    }
+
+    public AccountResponse disableAccount(long id) {
+        Account account = accountRepository.findAccountById(id);
+        account.setStatus(!account.getStatus());
+        Account newaccount = accountRepository.save(account);
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setStatus(account.getStatus());
+        return accountResponse;
+    }
+
+    public AccountResponse loginGoogle(LoginGoogleRequest loginGoogleRequest) {
         AccountResponse accountResponse = new AccountResponse();
         try {
-            String Email = codeRequest.getEmail();
-            Account account = accountRepository.findByEmail(Email);
-            String token = tokenService.generateToken(account);
-            String resetLink = "159.223.64.244/resetpassword?token=" + URLEncoder.encode(token, "UTF-8");
-
-            try{
-                EmailDetail emailDetail = new EmailDetail();
-                emailDetail.setRecipient(account.getEmail());
-                emailDetail.setMsgBody("Welcome to join HappyGolden");
-                emailDetail.setSubject("HappyGolden");
-                emailDetail.setAttachment("");
-                emailService.sendMailTemplate(emailDetail, account.getFullname());
-            }catch (Exception e){
-                System.out.println("Error to send mail to " + account.getEmail());
-            }
-
-            String newPassword = codeRequest.getNewpassword();
-            String checkPassword = codeRequest.getCheckPassword();
-            if(newPassword.equalsIgnoreCase(checkPassword)){
-                accountResponse = new AccountResponse();
-                accountResponse.setPassword(newPassword);
-                accountResponse.setToken(token);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return accountResponse;
-    }
-
-    public AccountResponse updateAccount(AccountResponse accountResponse) {
-        Account account = accountRepository.findAccountById(accountResponse.getId());
-        account.setStatus(false);
-        Account newaccount = accountRepository.save(account);
-        accountResponse = new AccountResponse();
-        accountResponse.setStatus(account.getStatus());
-        return accountResponse;
-    }
-
-    public AccountResponse  viewAccount() {
-        ArrayList<Account> list = (ArrayList<Account>) accountRepository.findAll();
-        AccountResponse accountResponse = new AccountResponse();
-        return accountResponse;
-    }
-
-    public AccountResponse disableAccount(DisableMethodRequest disableMethodRequest) {
-        Account account = accountRepository.findAccountById(disableMethodRequest.getId());
-        account.setStatus(false);
-        Account newaccount = accountRepository.save(account);
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setStatus(account.getStatus());
-        return accountResponse;
-    }
-
-    public AccountResponse loginGoogle(LoginGoogleRequest loginGoogleRequest){
-        AccountResponse accountResponse = new AccountResponse();
-        try{
             FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(loginGoogleRequest.getToken());
             String email = firebaseToken.getEmail();
             Account account = accountRepository.findByEmail(email);
-            if(account == null){
+            if (account == null) {
+                account = new Account();
                 account.setEmail(firebaseToken.getEmail());
-                account.setFullname(firebaseToken.getName());
-                accountRepository.save(account);
-            }else{
-                if (account.getStatus()){
+                account.setRole(RoleEnum.CUSTOMER);
+                account.setFullName(firebaseToken.getName());
+                account = accountRepository.save(account);
+            } else {
+                if (account.getStatus()) {
                     accountResponse.setId(account.getId());
-                    accountResponse.setFullname(account.getFullname());
+                    accountResponse.setRole(RoleEnum.CUSTOMER);
+                    accountResponse.setFullName(account.getFullName());
                     accountResponse.setEmail(account.getEmail());
                     String token = tokenService.generateToken(account);
                     accountResponse.setToken(token);
-                }else{
+                } else {
                     throw new AuthException("Account blocked!!!");
                 }
             }
-        }catch (FirebaseAuthException e){
+        } catch (FirebaseAuthException e) {
             e.printStackTrace();
         }
         return accountResponse;
@@ -183,4 +178,81 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         return accountRepository.findAccountByPhone(phone);
     }
+
+    public void ForgotPassword(ForgotPassRequest forgotPassRequest) {
+        Account account = accountRepository.findByEmail(forgotPassRequest.getEmail());
+        if (account == null) {
+            try {
+                throw new AuthException("Account not found");
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        EmailDetail emailDetail = new EmailDetail();
+        emailDetail.setRecipient(forgotPassRequest.getEmail());
+        emailDetail.setMsgBody("");
+        emailDetail.setSubject("Reset password for account" + forgotPassRequest.getEmail());
+        emailDetail.setFullName(account.getFullName());
+        emailDetail.setButton("Reset password");
+        String token = tokenService.generateToken(account);
+        emailDetail.setLink("http://159.223.64.244/change-password?token=" + token);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                emailService.sendMailTemplate(emailDetail);
+            }
+        };
+        new Thread(r).start();
+    }
+
+    public Account getCurrentAccount() {
+        return (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public Account ResetPassword(ResetPasswordRequest resetPasswordRequest) {
+        Account account = getCurrentAccount();
+        account.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewpassword()));
+       return accountRepository.save(account);
+    }
+
+    public AddAccountByAdminResponse addAccountByAdmin(AddAccountByAdminRequest x) {
+        Account newAccount = null;
+        Account account = new Account();
+        account.setPhone(x.getPhone());
+        account.setPassword(passwordEncoder.encode(x.getPassword()));
+        account.setEmail(x.getEmail());
+        account.setFullName(x.getFullname());
+        account.setGender(x.getGender());
+//        account.setBirthday(x.getBirthday());
+        account.setAddress(x.getAddress());
+        account.setRole(x.getRoleEnum());
+        account.setStatus(true);
+        newAccount = accountRepository.save(account);
+// Trả về đối tượng AccountResponse
+        AddAccountByAdminResponse y = new AddAccountByAdminResponse();
+        y.setPhone(newAccount.getPhone());
+        y.setEmail(newAccount.getEmail());
+//        y.setBirthday(newAccount.getBirthday());
+        y.setGender(newAccount.getGender());
+        y.setFullName(newAccount.getFullName());
+        y.setStatus(newAccount.getStatus());
+        y.setAddress(newAccount.getAddress());
+        y.setRoleEnum(newAccount.getRole());
+// Khi thanh cong dang ki gui mail ve
+        try {
+            EmailDetail emailDetail = new EmailDetail();
+            emailDetail.setRecipient(account.getEmail());
+            emailDetail.setMsgBody("Welcome to join HappyGolden");
+            emailDetail.setSubject("HappyGolden");
+            emailDetail.setAttachment("");
+            emailService.sendMailTemplate(emailDetail);
+        } catch (Exception e) {
+            System.out.println("Error to send mail to " + newAccount.getEmail());
+        }
+
+        return y;
+    }
+
+
+
 }
