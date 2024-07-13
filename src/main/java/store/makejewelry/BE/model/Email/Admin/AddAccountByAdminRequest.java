@@ -1,18 +1,17 @@
-package store.makejewelry.BE.model.Admin;
+package store.makejewelry.BE.model.Email.Admin;
 
 import lombok.Data;
 import store.makejewelry.BE.enums.RoleEnum;
 
 import java.util.Date;
 @Data
-public class AddAccountByAdminResponse {
+public class AddAccountByAdminRequest {
     String phone;
-    String fullName;
+    String password;
+    String fullname;
     String email;
     String gender;
     Date birthday;
     String address;
     RoleEnum roleEnum;
-    Boolean status ;
-
 }

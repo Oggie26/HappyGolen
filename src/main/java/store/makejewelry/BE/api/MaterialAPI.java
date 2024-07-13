@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.makejewelry.BE.entity.Material;
-import store.makejewelry.BE.model.Admin.MaterialRequest;
+import store.makejewelry.BE.model.Email.Admin.MaterialRequest;
 import store.makejewelry.BE.repository.MaterialRepository;
 import store.makejewelry.BE.service.MaterialService;
 
@@ -44,12 +44,13 @@ public class MaterialAPI {
 
     @PatchMapping("/{id}")
     public  ResponseEntity disableMaterial(@PathVariable  long id){
-        Material material = materialService.disMaterial(id);
+        Material material = materialService.disableMaterial(id);
         return ResponseEntity.ok(material);
     }
 
     @GetMapping("/search")
-    public List<Material> searchMaterial(@RequestParam("name") String name, @RequestParam("id") long id) {
-        return  materialRepository.searchByNameAndId(name, id);
+    public ResponseEntity<List<Material>> searchMaterial(@RequestParam("param") String param) {
+        List<Material> list = materialRepository.findByIdOrNameQuery(param);
+        return ResponseEntity.ok(list);
     }
 }

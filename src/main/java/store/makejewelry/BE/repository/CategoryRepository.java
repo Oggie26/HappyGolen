@@ -3,29 +3,17 @@ package store.makejewelry.BE.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import store.makejewelry.BE.entity.Category;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public interface CategoryRepository extends JpaRepository<Category , Long> {
     Category findCategoryById(long id);
     Category findCategoryByName(String name);
+    @Query(value = "SELECT * FROM category c WHERE c.id = :param OR c.name like concat('%',:param,'%')" , nativeQuery = true)
+    List<Category> findByIdOrNameQuery(@Param("param") String param);
 
-    List<Category> findCategoriesByNameLike( String name);
-
-    default List<Category> searchByNameAndId(String name, long id) {
-        List<Category> results = new ArrayList<>();
-        if (name != null && !name.isEmpty()) {
-            List<Category> categoriesByName = findCategoriesByNameLike("%" + name + "%");
-            results.addAll(categoriesByName);
-        }
-        if (id > 0) {
-            Category categoryById = findCategoryById(id);
-            if (categoryById != null) {
-                results.add(categoryById);
-            }
-        }
-        return results;
-    }
 }

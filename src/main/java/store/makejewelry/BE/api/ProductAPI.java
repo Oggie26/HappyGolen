@@ -4,11 +4,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import store.makejewelry.BE.entity.Product;
-import store.makejewelry.BE.model.Admin.ProductRequest;
-import store.makejewelry.BE.model.Admin.ProductResponse;
+import store.makejewelry.BE.entity.*;
+import store.makejewelry.BE.model.DetailProduct;
+import store.makejewelry.BE.model.Email.Admin.ProductRequest;
+import store.makejewelry.BE.model.Email.Admin.ProductResponse;
 import store.makejewelry.BE.model.DisableMethodRespone;
-import store.makejewelry.BE.repository.ProductRepository;
+import store.makejewelry.BE.repository.*;
 import store.makejewelry.BE.service.ProductService;
 import java.util.List;
 
@@ -25,12 +26,17 @@ public class ProductAPI {
     @Autowired
     ProductRepository productRepository;
 
-    @PostMapping()
-    public ResponseEntity addProduct(@RequestBody ProductRequest productRequest) {
-        // nhan request tu FE
-        ProductResponse addProductResponse = productService.addProduct(productRequest);
-        return ResponseEntity.ok(addProductResponse);
-    }
+    @Autowired
+    MaterialRepository materialRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    StoneRepository stoneRepository;
+
+    @Autowired
+    OrderRepository orderRepository;
 
     @PatchMapping("/{id}")
     public ResponseEntity disableProduct(@PathVariable long id) {
@@ -39,7 +45,7 @@ public class ProductAPI {
         return ResponseEntity.ok(disableProductTpl);
     }
 
-    @PutMapping("")
+    @PutMapping("/{id}")
     public ResponseEntity updateProduct(@RequestBody ProductRequest productRequest, long id) {
         // nhan request tu FE
         ProductResponse updateProductResponse = productService.updateProduct(productRequest , id );
@@ -52,9 +58,32 @@ public class ProductAPI {
         return ResponseEntity.ok(list);
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<List<Product>> searchProduct(@RequestParam("productName") String productName, @RequestParam("id") long id) {
-//            return (ResponseEntity<List<Product>>) productRepository.findProductByIdOrProductName(id , productName);
-//        }
+//    @PutMapping("/designerWork/{id}")
+//    public ResponseEntity designerWork(@RequestBody ProductRequest productRequest, long id) {
+//        // nhan request tu FE
+//        ProductResponse updateProductResponse = productService.designerWork(productRequest , id );
+//        return ResponseEntity.ok(updateProductResponse);
+//    }
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<DetailProduct> detailProduct (long id){
+//        Order order = orderRepository.findOrderById(id);
+//        Product product = productRepository.findProductByOrderId(id);
+//        Material material = materialRepository.findMaterialById(product.getId());
+//        Category category = categoryRepository.findCategoryById(product.getId());
+//        Stone stone = stoneRepository.findStoneById(product.getId());
+//        DetailProduct detailProduct = new DetailProduct();
+//        detailProduct.setProductName(product.getProductName());
+//        detailProduct.setId(product.getId());
+//        detailProduct.setImage(product.getImage());
+//        detailProduct.setSize(product.getSize());
+//        detailProduct.setThickness(product.getThickness());
+//        detailProduct.setPrice(product.getPrice());
+//        detailProduct.setWeight(product.getWeight());
+//        detailProduct.setMaterial(material);
+//        detailProduct.setCategory(category);
+//        detailProduct.setStone(stone);
+//        detailProduct.setDescription(product.getDescription());
+//        return ResponseEntity.ok(detailProduct);
+//    }
 }

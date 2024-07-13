@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service;
 import store.makejewelry.BE.entity.Account;
 import store.makejewelry.BE.enums.RoleEnum;
 import store.makejewelry.BE.exception.AuthException;
-import store.makejewelry.BE.model.Admin.AddAccountByAdminRequest;
-import store.makejewelry.BE.model.Admin.AddAccountByAdminResponse;
+import store.makejewelry.BE.model.AccountRequest;
+import store.makejewelry.BE.model.Email.Admin.AddAccountByAdminRequest;
+import store.makejewelry.BE.model.Email.Admin.AddAccountByAdminResponse;
 import store.makejewelry.BE.model.Auth.*;
 import store.makejewelry.BE.model.Email.EmailDetail;
 import store.makejewelry.BE.model.ForgotPassRequest;
 import store.makejewelry.BE.model.LoginGoogleRequest;
 import store.makejewelry.BE.repository.AccountRepository;
-
 import java.text.ParseException;
 import java.util.*;
 
@@ -43,6 +43,8 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     TokenService tokenService;
 
+
+
     public AccountResponse register(RegisterRequest registerRequest) throws ParseException {
         Account newAccount = null;
         Account account = new Account();
@@ -58,6 +60,7 @@ public class AuthenticationService implements UserDetailsService {
         newAccount = accountRepository.save(account);
 // Trả về đối tượng AccountResponse
         AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setId(newAccount.getId());
         accountResponse.setPhone(newAccount.getPhone());
         accountResponse.setEmail(newAccount.getEmail());
         accountResponse.setBirthday(newAccount.getBirthday());
@@ -98,9 +101,12 @@ public class AuthenticationService implements UserDetailsService {
                 ));
         Account account = accountRepository.findAccountByPhone(loginRequest.getPhone());
         AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setId(account.getId());
+        accountResponse.setFullName(account.getFullName());
         if (account.getStatus()) {
             String token = tokenService.generateToken(account);
             accountResponse.setPhone(account.getPhone());
+            accountResponse.setRole(account.getRole());
             accountResponse.setToken(token);
         } else {
             throw new AuthException("Account blocked!!!");
@@ -153,24 +159,23 @@ public class AuthenticationService implements UserDetailsService {
                 account.setEmail(firebaseToken.getEmail());
                 account.setRole(RoleEnum.CUSTOMER);
                 account.setFullName(firebaseToken.getName());
+                account.setStatus(true);
                 account = accountRepository.save(account);
             } else {
-                if (account.getStatus()) {
-                    accountResponse.setId(account.getId());
-                    accountResponse.setRole(RoleEnum.CUSTOMER);
-                    accountResponse.setFullName(account.getFullName());
-                    accountResponse.setEmail(account.getEmail());
-                    String token = tokenService.generateToken(account);
-                    accountResponse.setToken(token);
-                } else {
+                if (!account.getStatus()) {
                     throw new AuthException("Account blocked!!!");
                 }
             }
+            accountResponse.setId(account.getId());
+            accountResponse.setRole(RoleEnum.CUSTOMER);
+            accountResponse.setFullName(account.getFullName());
+            accountResponse.setEmail(account.getEmail());
+            String token = tokenService.generateToken(account);
+            accountResponse.setToken(token);
         } catch (FirebaseAuthException e) {
             e.printStackTrace();
         }
         return accountResponse;
-
     }
 
 
@@ -206,7 +211,8 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public Account getCurrentAccount() {
-        return (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return accountRepository.findById(account.getId()).orElse(null);
     }
 
     public Account ResetPassword(ResetPasswordRequest resetPasswordRequest) {
@@ -223,7 +229,7 @@ public class AuthenticationService implements UserDetailsService {
         account.setEmail(x.getEmail());
         account.setFullName(x.getFullname());
         account.setGender(x.getGender());
-//        account.setBirthday(x.getBirthday());
+        account.setBirthday(x.getBirthday());
         account.setAddress(x.getAddress());
         account.setRole(x.getRoleEnum());
         account.setStatus(true);
@@ -232,7 +238,7 @@ public class AuthenticationService implements UserDetailsService {
         AddAccountByAdminResponse y = new AddAccountByAdminResponse();
         y.setPhone(newAccount.getPhone());
         y.setEmail(newAccount.getEmail());
-//        y.setBirthday(newAccount.getBirthday());
+        y.setBirthday(newAccount.getBirthday());
         y.setGender(newAccount.getGender());
         y.setFullName(newAccount.getFullName());
         y.setStatus(newAccount.getStatus());
@@ -253,6 +259,48 @@ public class AuthenticationService implements UserDetailsService {
         return y;
     }
 
+    public List<Account> listStaff() {
+        List<Account> list = new ArrayList<>();
+        List<Account> allAccounts = accountRepository.findAll();
+        for (Account account : allAccounts) {
+            if (account.getRole() == RoleEnum.SELLER  ||
+                    account.getRole() == RoleEnum.DESIGNER || account.getRole() == RoleEnum.MAKER_PRODUCT) {
+                list.add(account);
+            }
+        }
+        return list;
+    }
+
+    public Account profile(){
+        Account account = getCurrentAccount();
+        return account;
+    }
+
+    public Account updateProfile(AccountRequest accountRequest) {
+        //Show thong tin cu
+        Account currentProfile = profile();
+
+        Account newProfile = new Account();
+
+        newProfile.setFullName(accountRequest.getAccount().getFullName());
+        newProfile.setEmail(accountRequest.getAccount().getEmail());
+        newProfile.setPhone(accountRequest.getAccount().getPhone());
+        newProfile.setGender(accountRequest.getAccount().getGender());
+        newProfile.setPassword(accountRequest.getAccount().getPassword());
+        newProfile.setAddress(accountRequest.getAccount().getAddress());
+        newProfile.setBirthday(accountRequest.getAccount().getBirthday());
+
+        // Update thong tin
+        currentProfile.setFullName(newProfile.getFullName());
+        currentProfile.setEmail(newProfile.getEmail());
+        currentProfile.setPhone(newProfile.getPhone());
+        currentProfile.setAddress(newProfile.getAddress());
+        currentProfile.setGender(newProfile.getGender());
+        currentProfile.setBirthday(newProfile.getBirthday());
+        currentProfile.setPassword(newProfile.getPassword());
+
+        return currentProfile;
+    }
 
 
 }

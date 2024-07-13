@@ -3,7 +3,7 @@ package store.makejewelry.BE.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import store.makejewelry.BE.entity.Material;
-import store.makejewelry.BE.model.Admin.MaterialRequest;
+import store.makejewelry.BE.model.Email.Admin.MaterialRequest;
 import store.makejewelry.BE.repository.MaterialRepository;
 import java.util.List;
 
@@ -33,7 +33,6 @@ public class MaterialService {
                 material.setStatus(true);
                 material.setName(materialRequest.getName());
                 material.setPrice(materialRequest.getPrice());
-                material.setWeight(materialRequest.getWeight());
                 newmaterial = materialRepository.save(material);
             }
         return newmaterial  ;
@@ -48,8 +47,7 @@ public class MaterialService {
                 material.setStatus(materialRequest.getStatus());
                 material.setName(materialRequest.getName());
                 material.setPrice(materialRequest.getPrice());
-                material.setWeight(materialRequest.getWeight());
-                        newMaterial = materialRepository.save(material);
+                newMaterial = materialRepository.save(material);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -57,7 +55,7 @@ public class MaterialService {
         return newMaterial;
     }
 
-    public Material disMaterial (long id){
+    public Material disableMaterial (long id){
         Material material = materialRepository.findMaterialById(id);
         if (material.getStatus()){
             material.setStatus(false);

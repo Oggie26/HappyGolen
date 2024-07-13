@@ -50,7 +50,8 @@ public class CategoryAPI {
     }
 
     @GetMapping("/search")
-    public List<Category> searchCategory(@RequestParam("name") String name, @RequestParam("id") long id) {
-        return categoryRepository.searchByNameAndId(name , id);
+    public  ResponseEntity<List<Category>> searchCategory(@RequestParam("param") String param) {
+        List<Category> list = categoryRepository.findByIdOrNameQuery(param);
+        return ResponseEntity.ok(list);
     }
 }

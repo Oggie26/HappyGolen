@@ -1,5 +1,6 @@
 package store.makejewelry.BE.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,21 +20,21 @@ public class OrderDetail {
     Float price ;
 
     @Column
-    String productName ;
-
-    @Column
-    String productTemplateName ;
+    String image;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     Product product;
 
     @ManyToOne
     @JoinColumn(name = "productTemplate_id")
+    @JsonIgnore
     ProductTemplate productTemplate;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @JsonIgnore
     Order order;
 
 

@@ -1,5 +1,6 @@
 package store.makejewelry.BE.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -7,9 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import store.makejewelry.BE.enums.RoleEnum;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -46,12 +49,16 @@ public class Account implements UserDetails {
     @Column
     String address;
 
-    @Column
+    @Enumerated(EnumType.STRING)
     RoleEnum role;
+
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<Order> orders =  new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of( new SimpleGrantedAuthority(role.toString()));
     }
 
     @Override
@@ -79,9 +86,13 @@ public class Account implements UserDetails {
         return true;
     }
 
-//    @OneToMany(mappedBy = "account")
-//    List<ProcessOrder> processOrder;
+    @OneToMany(mappedBy = "account")
+            @JsonIgnore
+    List<ProcessOrder> processOrder;
 
     @OneToMany(mappedBy = "account")
-    List<Blog> blog;
+    @JsonIgnore
+    List<Warranty> warranty;
+
+
 }

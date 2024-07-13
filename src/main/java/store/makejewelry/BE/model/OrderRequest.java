@@ -5,9 +5,15 @@ import store.makejewelry.BE.entity.Product;
 
 @Data
 public class OrderRequest {
-    String phone ;
-    String email;
-    long id;
-    Product product;
+    int quantity ;
+    long materialId ;
+    long categoryId ;
+    long stoneId ;
+    String productName ;
+    Float weightStone ;
+    Float size ;
+    String description ;
+    Float thickness ;
+    String imageTemplate ;
 
 }
