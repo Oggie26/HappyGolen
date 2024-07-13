@@ -4,17 +4,15 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import store.makejewelry.BE.entity.Product;
 import store.makejewelry.BE.entity.ProductTemplate;
-import store.makejewelry.BE.model.DisableMethodRequest;
-import store.makejewelry.BE.model.Admin.ProductTemplateRequest;
-import store.makejewelry.BE.model.Admin.ProductTemplateResponse;
+import store.makejewelry.BE.model.Email.Admin.ProductTemplateRequest;
+import store.makejewelry.BE.model.Email.Admin.ProductTemplateResponse;
 import store.makejewelry.BE.model.DisableMethodRespone;
+import store.makejewelry.BE.model.ProductTemplateDetail;
 import store.makejewelry.BE.repository.ProductTemplateRepository;
 import store.makejewelry.BE.service.ProductTemplateService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/product-template")
@@ -56,4 +54,12 @@ public class ProductTemplateAPI {
     public List<ProductTemplate> searchProductTemplate(@RequestParam("productName") String productName, @RequestParam("id") long id) {
         return productTemplateRepository.searchByProductNameAndProductId(productName , id);
     }
+
+    @GetMapping("{id}")
+    public ProductTemplateDetail productTemplateDetail(@PathVariable long id){
+        ProductTemplateDetail productTemplateDetail = productTemplateService.productTemplateDetail(id);
+        return productTemplateDetail;
+    }
+
+
 }

@@ -36,7 +36,7 @@ public class Filter extends OncePerRequestFilter {
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/api/login",
-            "/api/login-google",
+            "/api/login-GG",
             "/api/register",
             "/api/search-account",
             "/api/forgot-password",
@@ -45,13 +45,22 @@ public class Filter extends OncePerRequestFilter {
             "/api/disable-account/{id}",
             "/api/category",
             "/api/category/{id}",
+            "/api/category/search",
             "/api/material",
             "/api/material/{id}",
+            "/api/mâterial/search",
             "/api/product",
             "/api/list-account",
             "/api/account/{id}",
             "/api/product/{id}",
-            "/api/product-template/search"
+            "/api/product/search",
+            "/api/product-template/search",
+            "/api/addAccountByAdmin",
+            "/api/stone",
+            "/api/stone/search",
+            "/api/stone/{id}"
+
+
 
 
     );
@@ -80,7 +89,7 @@ public class Filter extends OncePerRequestFilter {
 
                 Account account;
                 try {
-                    // từ token tìm ra thằng đó là ai
+                        // từ token tìm ra thằng đó là ai
                     account = tokenService.extractAccount(token);
                 } catch (ExpiredJwtException expiredJwtException) {
                     // token het han

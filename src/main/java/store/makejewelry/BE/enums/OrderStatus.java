@@ -2,15 +2,16 @@ package store.makejewelry.BE.enums;
 
 public enum OrderStatus {
     INIT ,
-    SElLER_RECEIVE ,
+    SELLER_RECEIVE ,
     SELLER_SEND ,
-    APPROVAL_MANAGEMENT ,
-    APPROVAL_CUSTOMER ,
+    APPROVAL_MANAGER,
+    CUSTOMER_RECEIVE,
+    PAYMENT,
+    PAYMENT_SUCCESSFULLY,
+    DESIGNER_RECEIVE,
     DESIGNER_SEND3D ,
     APPROVAL3D_CUSTOMER ,
-
-
-
-
-
+    MAKER_RECEIVE,
+    MAKE_SEND,
+    FINISH_ORDER ,
 }

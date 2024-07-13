@@ -1,5 +1,6 @@
 package store.makejewelry.BE.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,8 +22,7 @@ public class Payment {
     Date date;
 
     @OneToMany(mappedBy = "payment")
+            @JsonIgnore
     List<Order> order;
-
-
 
 }

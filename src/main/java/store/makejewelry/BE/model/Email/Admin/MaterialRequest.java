@@ -1,4 +1,4 @@
-package store.makejewelry.BE.model.Admin;
+package store.makejewelry.BE.model.Email.Admin;
 
 import lombok.Data;
 

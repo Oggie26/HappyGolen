@@ -3,6 +3,7 @@ package store.makejewelry.BE.exception;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +20,11 @@ public class APIHandleException {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Object> handDuplicatePhone(SQLIntegrityConstraintViolationException ex) {
         return new ResponseEntity<>("Duplicate for Phone", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handDuplicatePhone(AccessDeniedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthException.class)

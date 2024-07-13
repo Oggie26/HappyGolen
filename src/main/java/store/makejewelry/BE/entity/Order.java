@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import store.makejewelry.BE.enums.OrderStatus;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,32 +23,32 @@ public class Order {
     Float total ;
 
     @Column
-    Date orderDate ;
+    LocalDateTime orderDate ;
 
     @Column
-    Date handDate ;
+    LocalDateTime handDate;
 
     @Column
     String productName;
 
-    @Enumerated(EnumType.STRING)
-    OrderStatus status ;
+    @Column
+    String image;
 
     @Column
-    String staffName ;
-
-    @Column
-    String customerName ;
-
-    @OneToMany(mappedBy = "order")
-    List<OrderDetail> orderDetail;
+    String imageTemplate;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name = "customer_id")
+    Account customer;
 
-    @OneToMany(mappedBy = "order")
-    private List<ProcessOrder> processOrders;
+    String message;
+
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    List<OrderDetail> orderDetail = new ArrayList<>();
+
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
+    private List<ProcessOrder> processOrders = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "payment_id")

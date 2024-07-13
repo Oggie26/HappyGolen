@@ -16,12 +16,16 @@ public class Blog {
     String blogName;
 
     @Column
-    String link;
+    String content;
+
+    @Column
+    String description ;
+
+    @Column
+    String image;
 
     @Column(nullable = false)
     Boolean status;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    Account account;
+
 }

@@ -6,6 +6,8 @@ import store.makejewelry.BE.entity.Category;
 import store.makejewelry.BE.model.CategoryRequest;
 import store.makejewelry.BE.repository.CategoryRepository;
 
+import java.util.List;
+
 
 @Service
 public class CategoryService {
@@ -67,6 +69,10 @@ public class CategoryService {
             category.setStatus(true);
         }
         return categoryRepository.save(category);
+    }
+
+    public List<Category> searchByIdOrNameQuery(String param) {
+        return categoryRepository.findByIdOrNameQuery(param);
     }
 
 

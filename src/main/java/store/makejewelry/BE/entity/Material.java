@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+
 public class Material {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +23,6 @@ public class Material {
 
     @Column(unique = true)
     String name ;
-
-    @Column
-    Float weight ;
 
     @OneToMany(mappedBy = "material")
     @JsonIgnore

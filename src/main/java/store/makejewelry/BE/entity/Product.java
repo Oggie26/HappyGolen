@@ -1,5 +1,6 @@
 package store.makejewelry.BE.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id ;
 
-    @Column(unique = true)
+    @Column()
     String productName ;
 
     @Column
@@ -31,6 +32,8 @@ public class Product {
     Float weight;
 
     @Column
+    Float thickness ;
+    @Column
     Date date ;
 
     @Column(nullable = false)
@@ -42,17 +45,26 @@ public class Product {
     @Column
     Float size;
 
-    @Column
-    int quantity;
-
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     List<OrderDetail> orderDetail;
 
     @ManyToOne
     @JoinColumn(name = "material_id")
+    @JsonIgnore
     Material material;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore
     Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "stone_id")
+    @JsonIgnore
+    Stone stone;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "warranty_id", unique = true)
+    @JsonIgnore
+    Warranty warranty;
 }

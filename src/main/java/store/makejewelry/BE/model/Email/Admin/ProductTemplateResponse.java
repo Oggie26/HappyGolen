@@ -1,6 +1,10 @@
-package store.makejewelry.BE.model.Admin;
+package store.makejewelry.BE.model.Email.Admin;
 
 import lombok.Data;
+import store.makejewelry.BE.entity.Category;
+import store.makejewelry.BE.entity.Material;
+import store.makejewelry.BE.entity.Stone;
+
 import java.util.Date;
 @Data
 public class ProductTemplateResponse {
@@ -14,7 +18,10 @@ public class ProductTemplateResponse {
     Float weight;
     String content;
     long id;
-    long materialId;
-    long categoryId ;
+    float thickness ;
+    Material material;
+    Category category ;
+    Stone stone;
+
 
 }

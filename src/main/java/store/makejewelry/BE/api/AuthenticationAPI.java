@@ -1,12 +1,18 @@
 package store.makejewelry.BE.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import store.makejewelry.BE.entity.Account;
-import store.makejewelry.BE.model.Admin.AddAccountByAdminRequest;
-import store.makejewelry.BE.model.Admin.AddAccountByAdminResponse;
+import store.makejewelry.BE.model.AccountRequest;
+import store.makejewelry.BE.model.Email.Admin.AddAccountByAdminRequest;
+import store.makejewelry.BE.model.Email.Admin.AddAccountByAdminResponse;
 import store.makejewelry.BE.model.Auth.*;
 import store.makejewelry.BE.model.ForgotPassRequest;
 import store.makejewelry.BE.model.LoginGoogleRequest;
@@ -18,10 +24,9 @@ import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api")
 @SecurityRequirement(name = "api")
 @CrossOrigin("*")
-
 public class AuthenticationAPI {
     @Autowired
     EmailService emailService;
@@ -86,7 +91,7 @@ public class AuthenticationAPI {
     }
 
 
-    @PostMapping("login-google")
+    @PostMapping("/login-GG")
     public ResponseEntity<AccountResponse> loginGoogle(@RequestBody LoginGoogleRequest loginGoogleRequest) {
         return ResponseEntity.ok(authenticationService.loginGoogle(loginGoogleRequest));
     }
@@ -117,9 +122,16 @@ public class AuthenticationAPI {
     }
 
     @GetMapping("search-account")
-    public List<Account> searchAccount(@RequestParam("phone") String phone, @RequestParam("id") long id) {
-        return  accountRepository.searchByPhoneAndId(phone , id);
+    public ResponseEntity<List<Account>> searchAccount(@RequestParam("param") String param) {
+        List<Account> list = accountRepository.findByIdOrNameQuery(param);
+        return  ResponseEntity.ok(list);
     }
+
+    @GetMapping("search-staff")
+//    public ResponseEntity<List<Account>> searchAccount(@RequestParam("param") String param) {
+//        List<Account> list = accountRepository.findByIdOrNameQuery(param);
+//        return  ResponseEntity.ok(list);
+//    }
 
     @PutMapping("reset-password")
     public  ResponseEntity resetPassWord (@RequestBody ResetPasswordRequest resetPasswordRequest){
@@ -127,4 +139,29 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(account);
     }
 
+    @GetMapping("logout")
+    public String getLogoutPage(HttpServletRequest request, HttpServletResponse response){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null)
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+        return "redirect:/login";
+    }
+
+    @GetMapping("listStaff")
+    public ResponseEntity<List<Account>> listStaff(){
+        List<Account> account = authenticationService.listStaff();
+        return ResponseEntity.ok(account);
+    }
+
+    @GetMapping("profile")
+    public ResponseEntity<Account> profile (){
+        Account account = authenticationService.profile();
+        return ResponseEntity.ok(account);
+    }
+
+    @PutMapping("update-profile")
+    public ResponseEntity<Account> updateProfile (@RequestBody AccountRequest accountRequest){
+        Account account = authenticationService.updateProfile(accountRequest);
+        return ResponseEntity.ok(account);
+    }
 }
